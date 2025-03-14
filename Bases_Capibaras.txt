@@ -1,0 +1,82 @@
+CREATE DATABASE IF NOT EXISTS capi_base;
+USE capi_base;
+
+CREATE TABLE IF NOT EXISTS questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS answers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question_id INT NOT NULL,
+    text VARCHAR(255) NOT NULL,
+    is_correct BOOLEAN NOT NULL,
+    FOREIGN KEY (question_id) REFERENCES questions(id)
+);
+
+INSERT INTO questions (question) VALUES ('Quin és el rosegador més gran del món?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (1, 'Capibara', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (1, 'Rata', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (1, 'Esquirol', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (1, 'Castor', false);
+
+
+INSERT INTO questions (question) VALUES ('En quin continent es troben naturalment les capibares?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (2, 'Amèrica del Sud', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (2, 'Àfrica', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (2, 'Àsia', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (2, 'Europa', false);
+
+
+INSERT INTO questions (question) VALUES ('Quin és l''hàbitat preferit de les capibares?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (3, 'Àrees properes a l''aigua, com rius i pantans', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (3, 'Deserts', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (3, 'Boscos freds', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (3, 'Muntanyes', false);
+
+
+INSERT INTO questions (question) VALUES ('Què mengen principalment les capibares?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (4, 'Vegetació, herbes i plantes aquàtiques', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (4, 'Carns petites', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (4, 'Només fruites', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (4, 'Insectes', false);
+
+INSERT INTO questions (question) VALUES ('Quina característica física els ajuda a nedar molt bé?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (5, 'Les potes parcialment palmesades', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (5, 'Les cues llargues', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (5, 'Les aletes', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (5, 'La seva forma aerodinàmica', false);
+
+INSERT INTO questions (question) VALUES ('Com es comporten socialment les capibares?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (6, 'Viuen en grups i són molt sociables', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (6, 'Són animals solitaris', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (6, 'Viuen en parelles monògames', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (6, 'Es reuneixen només en èpoques d''aparellament', false);
+
+
+INSERT INTO questions (question) VALUES ('Quant de temps poden viure les capibares en la natura?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (7, 'Entre 8 i 10 anys', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (7, 'Només 2-3 anys', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (7, 'Més de 20 anys', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (7, 'Al voltant de 15 anys', false);
+
+
+INSERT INTO questions (question) VALUES ('Quins depredadors naturals poden caçar capibares?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (8, 'Jaguar, caimà i anaconda', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (8, 'Lleons i óssos', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (8, 'Àguiles i falcons', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (8, 'Guineus i llops', false);
+
+
+INSERT INTO questions (question) VALUES ('Quin paper ecològic compleixen les capibares en el seu entorn?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (9, 'Ajuden a dispersar llavors i mantenir l''equilibri de la vegetació', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (9, 'Controlen la població d''insectes', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (9, 'Regulen el clima local', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (9, 'Purifiquen l''aigua', false);
+
+INSERT INTO questions (question) VALUES ('Són les capibares animals domesticables?');
+INSERT INTO answers (question_id, text, is_correct) VALUES (10, 'No són animals domèstics tradicionals, encara que poden ser sociables', true);
+INSERT INTO answers (question_id, text, is_correct) VALUES (10, 'Són mascotes comunes', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (10, 'Es crien com a bestiar', false);
+INSERT INTO answers (question_id, text, is_correct) VALUES (10, 'No poden viure en captivitat', false);
+
