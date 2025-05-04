@@ -1,5 +1,6 @@
 package com.amazingapps.appquizmvvm.feature_quiz.presentation.mainpage.composables
 
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.composables.ButtonMain
+import androidx.core.content.edit
 
 @Composable
 fun CardSettings(
@@ -42,6 +45,11 @@ fun CardSettings(
     numPreguntes: Float,
     sliderAction: (Int) -> Unit
 ) {
+
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE) }
+    var volumeState by remember { mutableStateOf(prefs.getFloat("volume_level", 0.5f)) }
+
     AnimatedVisibility(
         visible = isVisble,
         enter = fadeIn() + expandVertically(),
@@ -75,6 +83,20 @@ fun CardSettings(
                                 )
 
                             )
+                            Slider(
+                                value = volumeState,
+                                onValueChange = { newVolume ->
+                                    volumeState = newVolume
+                                    prefs.edit() { putFloat("volume_level", newVolume) }
+                                },
+                                valueRange = 0f..1f,
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                colors = SliderDefaults.colors(
+                                    thumbColor = Color(0xFFFF903A),
+                                    activeTrackColor = Color(0xffe86620),
+                                    inactiveTrackColor = Color.Gray
+                                )
+                            )
                             ButtonMain(
                                 text = "guardar",
                                 onclick = {
@@ -83,6 +105,7 @@ fun CardSettings(
                             )
                         }
                     }
+
                 }
             }
         }

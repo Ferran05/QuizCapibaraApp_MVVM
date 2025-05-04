@@ -21,11 +21,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusTargetModifierNode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +41,7 @@ import com.amazingapps.appquizmvvm.feature_quiz.presentation.play.composables.Co
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.play.composables.FalseCard
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.NumQuestionState
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.Screen
+import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.SoundManager
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.composables.ButtonMain
 import org.koin.androidx.compose.getViewModel
 
@@ -45,6 +49,20 @@ import org.koin.androidx.compose.getViewModel
 fun PlayScreen(navController: NavController, viewModel: PlayViewModel = getViewModel()) {
     val state = viewModel.state.value
     val currentQuestion = viewModel.currentQuestion.collectAsState()
+
+    val context = LocalContext.current
+    val soundManager = remember { SoundManager(context) }
+
+    DisposableEffect(Unit) {
+        soundManager.reproduir("musica")
+        onDispose {
+            soundManager.alliberar()
+        }
+
+    }
+
+
+
     if (currentQuestion.value == null) {
         when (state.start) {
             true -> {
