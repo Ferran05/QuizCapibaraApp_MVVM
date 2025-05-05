@@ -1,5 +1,7 @@
 package com.amazingapps.appquizmvvm.feature_quiz.presentation.mainpage
 
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -44,12 +47,24 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun MainScreen( navController: NavController, viewModel: MainViewModel = getViewModel()){
     val state = viewModel.state.value
-
+    val context = LocalContext.current
     Column(modifier = Modifier.fillMaxSize().background(color = Color(0xFFFF903A)), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth().padding(top = 50.dp, start = 8.dp, bottom =  15.dp, end = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("CapibaraLAND", fontSize = 30.sp, fontFamily = FontFamily.Serif, color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp))
             IconButton(
-                onClick = {viewModel.onEvent(MainEvent.ChangeSettingsV)},
+                onClick = {
+                    val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
+                    val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                    val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                    mediaPlayer.setVolume(volume, volume)
+
+                    mediaPlayer.setOnCompletionListener {
+                        it.release()
+                    }
+
+                    mediaPlayer.start()
+
+                    viewModel.onEvent(MainEvent.ChangeSettingsV)},
                 modifier = Modifier
                     .size(50.dp)
                     .background(Color.White, shape = CircleShape)

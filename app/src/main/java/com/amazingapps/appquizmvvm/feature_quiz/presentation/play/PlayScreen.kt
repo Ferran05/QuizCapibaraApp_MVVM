@@ -1,5 +1,7 @@
 package com.amazingapps.appquizmvvm.feature_quiz.presentation.play
 
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import com.amazingapps.appquizmvvm.R
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.play.composables.CorrectCard
@@ -49,16 +56,32 @@ import org.koin.androidx.compose.getViewModel
 fun PlayScreen(navController: NavController, viewModel: PlayViewModel = getViewModel()) {
     val state = viewModel.state.value
     val currentQuestion = viewModel.currentQuestion.collectAsState()
-
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current.lifecycle
     val soundManager = remember { SoundManager(context) }
 
-    DisposableEffect(Unit) {
-        soundManager.reproduir("musica")
-        onDispose {
-            soundManager.alliberar()
+    LaunchedEffect(Unit) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            soundManager.reproduir("musica")
         }
+    }
 
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                soundManager.pausar()
+            } else if (event == Lifecycle.Event.ON_DESTROY) {
+                soundManager.alliberar()
+            }
+        }
+        lifecycleOwner.addObserver(observer)
+        onDispose {
+            lifecycleOwner.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        soundManager.reproduir("musica")
     }
 
 
@@ -69,7 +92,22 @@ fun PlayScreen(navController: NavController, viewModel: PlayViewModel = getViewM
                 Column( modifier = Modifier.fillMaxSize().background(color = Color(0xFFFF903A)).padding(top = 30.dp),  horizontalAlignment = Alignment.CenterHorizontally) {
                     Row(modifier = Modifier.fillMaxWidth().padding(start = 8.dp), horizontalArrangement = Arrangement.Start) {
                         IconButton(
-                            onClick = {navController.navigate(Screen.MainScreen.route)},
+                            onClick = {
+                                val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
+                                val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                                // Create and configure MediaPlayer
+                                val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                                mediaPlayer.setVolume(volume, volume)
+
+                                mediaPlayer.setOnCompletionListener {
+                                    it.release()
+                                }
+
+                                mediaPlayer.start()
+
+
+
+                                navController.navigate(Screen.MainScreen.route)},
                             modifier = Modifier
                                 .size(50.dp)
                                 .background(Color.White, shape = CircleShape)

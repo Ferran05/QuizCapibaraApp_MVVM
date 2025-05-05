@@ -1,4 +1,6 @@
 package com.amazingapps.appquizmvvm.feature_quiz.presentation.moreInfo
+import android.content.Context
+import android.media.MediaPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -42,13 +45,26 @@ import org.koin.androidx.compose.getViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoreInfoScreen( navController: NavController, viewModel: MoreInfoViewModel = getViewModel()) {
+    val context = LocalContext.current
     LazyColumn(modifier = Modifier.background(Color(0xFFFF903A)).fillMaxSize().padding(8.dp)) {
 
         item {
             Row(modifier = Modifier.padding(top = 20.dp)) {
                 Column {
                     IconButton(
-                        onClick = {navController.navigate(Screen.MainScreen.route)},
+                        onClick = {
+                            val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
+                            val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                            val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                            mediaPlayer.setVolume(volume, volume)
+
+                            mediaPlayer.setOnCompletionListener {
+                                it.release()
+                            }
+
+                            mediaPlayer.start()
+
+                            navController.navigate(Screen.MainScreen.route)},
                         modifier = Modifier
                             .size(50.dp)
                             .background(Color.White, shape = CircleShape)

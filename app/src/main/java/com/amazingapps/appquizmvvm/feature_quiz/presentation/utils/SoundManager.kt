@@ -28,27 +28,25 @@ class SoundManager(private val context: Context) {
     }
 
     fun reproduir(nom: String) {
-        if (nom == currentClip && mediaPlayer?.isPlaying == false) {
-            mediaPlayer?.start()
-            guardarEstat(nom, mediaPlayer?.currentPosition ?: 0, true)
-        } else {
-            alliberar()
-            val resId = soundMap[nom] ?: return
-            currentClip = nom
-
-            mediaPlayer = MediaPlayer.create(context, resId).apply {
-                val volume = obtenerVolume()
-                setVolume(volume, volume)
-                isLooping = true
-                setOnPreparedListener {
-                    val pos = prefs.getInt("${nom}_pos", 0)
-                    seekTo(pos)
-                    start()
-                }
-            }
-
-            guardarEstat(nom, 0, true)
+        if (nom == currentClip && mediaPlayer?.isPlaying == true) {
+            return // Ya está reproduciendo
         }
+
+        alliberar() // Libera anterior si hay
+
+        val resId = soundMap[nom] ?: return
+        val volume = obtenerVolume()
+        val pos = prefs.getInt("${nom}_pos", 0)
+
+        currentClip = nom
+        mediaPlayer = MediaPlayer.create(context, resId)?.apply {
+            setVolume(volume, volume)
+            isLooping = true
+            seekTo(pos)
+            start()
+        }
+
+        guardarEstat(nom, pos, true)
     }
 
     fun pausar() {
@@ -61,18 +59,24 @@ class SoundManager(private val context: Context) {
     }
 
     fun reprendreUltimClip() {
+        // Si ya hay uno activo, no hacer nada
+        if (mediaPlayer != null) return
+
         val nom = prefs.getString("clip_nom", null) ?: return
         val pos = prefs.getInt("${nom}_pos", 0)
         val estavaReproduint = prefs.getBoolean("clip_playing", false)
         val resId = soundMap[nom] ?: return
+        val volume = obtenerVolume()
 
         currentClip = nom
-        mediaPlayer = MediaPlayer.create(context, resId).apply {
-            setOnPreparedListener {
-                seekTo(pos)
-                if (estavaReproduint) start()
-            }
+        mediaPlayer = MediaPlayer.create(context, resId)?.apply {
+            setVolume(volume, volume)
+            isLooping = true
+            seekTo(pos)
+            if (estavaReproduint) start()
         }
+
+        guardarEstat(nom, pos, estavaReproduint)
     }
 
     fun alliberar() {
