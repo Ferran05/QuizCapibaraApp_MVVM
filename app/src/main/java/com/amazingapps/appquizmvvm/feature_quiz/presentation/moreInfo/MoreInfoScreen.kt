@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.amazingapps.appquizmvvm.R
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.Screen
+import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.SoundManager
 import org.koin.androidx.compose.getViewModel
 
 
@@ -54,15 +55,17 @@ fun MoreInfoScreen( navController: NavController, viewModel: MoreInfoViewModel =
                     IconButton(
                         onClick = {
                             val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
-                            val volume = sharedPreferences.getFloat("volume_level", 1.0f)
-                            val mediaPlayer = MediaPlayer.create(context, R.raw.button)
-                            mediaPlayer.setVolume(volume, volume)
+                            if (SoundManager(context).isSorollActiu()) {
+                                val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                                val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                                mediaPlayer.setVolume(volume, volume)
 
-                            mediaPlayer.setOnCompletionListener {
-                                it.release()
+                                mediaPlayer.setOnCompletionListener {
+                                    it.release()
+                                }
+
+                                mediaPlayer.start()
                             }
-
-                            mediaPlayer.start()
 
                             navController.navigate(Screen.MainScreen.route)},
                         modifier = Modifier

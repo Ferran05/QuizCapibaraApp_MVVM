@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -41,6 +43,7 @@ import com.amazingapps.appquizmvvm.feature_quiz.presentation.mainpage.composable
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.NumQuestionState
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.composables.ButtonMain
 import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.Screen
+import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.SoundManager
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,21 +51,35 @@ import org.koin.androidx.compose.getViewModel
 fun MainScreen( navController: NavController, viewModel: MainViewModel = getViewModel()){
     val state = viewModel.state.value
     val context = LocalContext.current
-    Column(modifier = Modifier.fillMaxSize().background(color = Color(0xFFFF903A)), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.fillMaxSize()
+                              .background(color = Color(0xFFFF903A)).pointerInput(Unit) {
+            detectVerticalDragGestures { _, dragAmount ->
+                if (dragAmount < -50) {
+                    navController.navigate(Screen.MoreInfoScreen.route)
+                }
+                if (dragAmount < 50) {
+                    viewModel.onEvent(MainEvent.ChangeSettingsV)
+                }
+            }
+
+            },
+        horizontalAlignment = Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth().padding(top = 50.dp, start = 8.dp, bottom =  15.dp, end = 16.dp), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("CapibaraLAND", fontSize = 30.sp, fontFamily = FontFamily.Serif, color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 10.dp))
             IconButton(
                 onClick = {
                     val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
-                    val volume = sharedPreferences.getFloat("volume_level", 1.0f)
-                    val mediaPlayer = MediaPlayer.create(context, R.raw.button)
-                    mediaPlayer.setVolume(volume, volume)
+                    if (SoundManager(context).isSorollActiu()) {
+                        val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                        val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                        mediaPlayer.setVolume(volume, volume)
 
-                    mediaPlayer.setOnCompletionListener {
-                        it.release()
+                        mediaPlayer.setOnCompletionListener {
+                            it.release()
+                        }
+
+                        mediaPlayer.start()
                     }
-
-                    mediaPlayer.start()
 
                     viewModel.onEvent(MainEvent.ChangeSettingsV)},
                 modifier = Modifier

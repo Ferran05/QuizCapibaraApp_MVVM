@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amazingapps.appquizmvvm.R
+import com.amazingapps.appquizmvvm.feature_quiz.presentation.utils.SoundManager
 
 @Composable
 fun ButtonMain(
@@ -27,15 +28,18 @@ fun ButtonMain(
     Button(
         onClick = {
             val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
-            val volume = sharedPreferences.getFloat("volume_level", 1.0f)
-            val mediaPlayer = MediaPlayer.create(context, R.raw.button)
-            mediaPlayer.setVolume(volume, volume)
 
-            mediaPlayer.setOnCompletionListener {
-                it.release()
+            if (SoundManager(context).isSorollActiu()) {
+                val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                mediaPlayer.setVolume(volume, volume)
+
+                mediaPlayer.setOnCompletionListener {
+                    it.release()
+                }
+
+                mediaPlayer.start()
             }
-
-            mediaPlayer.start()
 
             onclick()},
         colors = ButtonDefaults.buttonColors(containerColor = Color(0xffe86620), contentColor = Color(0xff4d2502)),

@@ -94,16 +94,18 @@ fun PlayScreen(navController: NavController, viewModel: PlayViewModel = getViewM
                         IconButton(
                             onClick = {
                                 val sharedPreferences = context.getSharedPreferences("clip_prefs", Context.MODE_PRIVATE)
-                                val volume = sharedPreferences.getFloat("volume_level", 1.0f)
-                                // Create and configure MediaPlayer
-                                val mediaPlayer = MediaPlayer.create(context, R.raw.button)
-                                mediaPlayer.setVolume(volume, volume)
 
-                                mediaPlayer.setOnCompletionListener {
-                                    it.release()
+                                if (SoundManager(context).isSorollActiu()) {
+                                    val volume = sharedPreferences.getFloat("volume_level", 1.0f)
+                                    val mediaPlayer = MediaPlayer.create(context, R.raw.button)
+                                    mediaPlayer.setVolume(volume, volume)
+
+                                    mediaPlayer.setOnCompletionListener {
+                                        it.release()
+                                    }
+
+                                    mediaPlayer.start()
                                 }
-
-                                mediaPlayer.start()
 
 
 

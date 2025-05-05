@@ -94,4 +94,12 @@ class SoundManager(private val context: Context) {
             apply()
         }
     }
+
+    fun soroll(enabled: Boolean) {
+        prefs.edit().putBoolean("sons_activats", enabled).apply()
+    }
+
+    fun isSorollActiu(): Boolean {
+        return prefs.getBoolean("sons_activats", true)
+    }
 }
